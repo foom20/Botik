@@ -1,1 +1,77 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Фото</title>
+<style>
+body {
+  background: #171923;
+  color: white;
+  font-family: Arial;
+  text-align: center;
+  padding: 25px;
+}
+button {
+  padding: 14px 22px;
+  margin: 10px;
+  border: 0;
+  border-radius: 10px;
+  background: #3285ed;
+  color: white;
+  font-size: 17px;
+}
+video, canvas, img {
+  width: 100%;
+  max-width: 400px;
+  border-radius: 12px;
+}
+</style>
+</head>
+<body>
 
+<h2>Сделать фотографию</h2>
+<p>Нажимая кнопку, вы разрешаете доступ к камере.
+Фото будет сделано только по вашему нажатию.</p>
+
+<button id="start">Включить камеру</button>
+<br>
+<video id="camera" autoplay playsinline hidden></video>
+<br>
+<button id="take" hidden>Сделать фото</button>
+<canvas id="photo" hidden></canvas>
+<br>
+<a id="download" hidden>Скачать фотографию</a>
+
+<script>
+const video = document.getElementById('camera');
+const canvas = document.getElementById('photo');
+
+document.getElementById('start').onclick = async () => {
+  try {
+    const stream = await navigator.mediaDevices
+      .getUserMedia({video: true});
+    video.srcObject = stream;
+    video.hidden = false;
+    document.getElementById('take').hidden = false;
+  } catch (e) {
+    alert('Не удалось получить доступ к камере');
+  }
+};
+
+document.getElementById('take').onclick = () => {
+  canvas.width = video.videoWidth;
+  canvas.height = video.videoHeight;
+  canvas.getContext('2d').drawImage(video, 0, 0);
+  canvas.hidden = false;
+
+  const link = document.getElementById('download');
+  link.href = canvas.toDataURL('image/png');
+  link.download = 'photo.png';
+  link.textContent = 'Скачать фотографию';
+  link.hidden = false;
+};
+</script>
+
+</body>
+</html>
